@@ -1,9 +1,9 @@
 const form = document.getElementById("signInForm");
 const userToken = localStorage.getItem(window.storageKey);
 
-
+console.log(window.storageKey);
 if (userToken) {
-  navigateToDashboard(userToken);
+  navigateToDashboard();
 }
 
 form.addEventListener("submit", async (event) => {

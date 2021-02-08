@@ -24,6 +24,7 @@ class Api {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        // "Access-Control-Allow-Headers": "*"
       },
       body: null,
     };
@@ -33,8 +34,14 @@ class Api {
         break;
       case "register":
         endPointInfo.endPoint = "/register";
-        console.log(endPointInfo.endPoint);
+
         break;
+      case "countries":
+        endPointInfo.endPoint = "/v2/all";
+        options.method = "GET";
+        // options.mode="no-cors";
+        break;
+
       default:
         endPointInfo.endPoint = "";
     }
@@ -48,20 +55,20 @@ class Api {
   }
 
   async fetchRequest(api, endpointInfo, data = {}) {
-    const baseUrl=null;
+    let baseUrl = null;
     if (api == "reqres") {
-      this.baseUrl = this.baseUrlReqResIn;
+      baseUrl = this.baseUrlReqResIn;
     } else {
       baseUrl = this.baseUrlRestCountries;
+      console.log(baseUrl)
     }
     try {
-      console.log(`${this.baseUrl}${endpointInfo.endPoint}`);
+      console.log(`${baseUrl}${endpointInfo.endPoint}`);
       const response = await fetch(
-        `${this.baseUrl}${endpointInfo.endPoint}`,
+        `${baseUrl}${endpointInfo.endPoint}`,
         data
       );
       const result = await response.json();
-
       return result;
     } catch (error) {
       console.log(error);
@@ -95,21 +102,29 @@ class Api {
       console.log("registration error", error);
     }
   }
+  async getAllCountries() {
+    try {
+      const request = this.createRequest("countries", "");
+      const result = this.fetchRequest("restcountries",request.endPointInfo,null);
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
-
-function navigateToIndex(){
+function navigateToIndex() {
   location.replace("index.html");
 }
 
-function storeToken(token){
-  localStorage.setItem(window.storageKey,token);
+function storeToken(token) {
+  localStorage.setItem(window.storageKey, token);
 }
-function navigateToDashboard(){
-location.replace("dashboard.html");
+function navigateToDashboard() {
+  location.replace("dashboard.html");
 }
 
-function navigateToSignUp(){
+function navigateToSignUp() {
   location.replace("sign_up.html");
 }
 

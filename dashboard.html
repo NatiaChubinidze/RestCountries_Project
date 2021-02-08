@@ -15,24 +15,49 @@
   </head>
   <body>
     <div class="container p-2 position-relative">
-        <div class="col-4 d-inline-block align-middle me-3">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search for Countries"
-              id="search"
-            />
+      <div class="col-4 d-inline-block align-middle me-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search for Countries"
+          id="search"
+        />
+      </div>
+      <button
+        type="button"
+        id="logOut"
+        class="btn btn-primary position-absolute log-out"
+      >
+        Log Out
+      </button>
+      <div
+        id="cards"
+        data-id="1234"
+        class="cards country d-flex justify-content-between flex-wrap align-content-between mt-3"
+      >
+        <!-- <div class="card country" data-id="1234" id="card">
+          <div class="flag country" data-id="1234">
+            <img src="pics/cat.png" />
           </div>
-          <button type="button"  id="logOut" class="btn btn-primary position-absolute log-out">Log Out</button>
-          <div class="cards d-flex justify-content-between flex-wrap align-content-between mt-3">
-              <div class="card" id="card">
-                  <div class="flag"></div>
-                  <div class="info"></div>
-                  <div class="toggle d-none"></div>
-              </div>
-              
-              
+          <div class="info country p-3" data-id="1234">
+            <h5>Germany</h5>
+            <p>Population</p>
+            <p>Region</p>
+            <p>Capital</p>
           </div>
+          <div class="toggle country d-none p-3 pt-0" data-id="1234">
+            <p>Subregion</p>
+            <p>Timezone</p>
+            <p>Regional Blocks</p>
+            <p>Languages</p>
+            <p>Currencies</p>
+            <p>Borders</p>
+            <p>Calling Code</p>
+            <p>Demonym</p>
+            <p>Native Name</p>
+          </div>
+        </div> -->
+      </div>
     </div>
     <script src="js/services.js"></script>
     <script src="./js/dashboard.js"></script>
