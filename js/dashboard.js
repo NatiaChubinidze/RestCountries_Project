@@ -1,5 +1,12 @@
+const countryStorageKey="App:Country_Storage";
+const searchValueStorageKey="App:Search_Value";
+
 const logOutBtn = document.getElementById("logOut");
 const outerCardDiv = document.getElementById("cards");
+const searchField = document.getElementById("search");
+const searchBtn = document.getElementById("searchBtn");
+let searchValue="";
+let searchedCountries=[];
 
 class Card {
   // <div class="card country" data-id="1234" id="card">
@@ -8,7 +15,7 @@ class Card {
   //       </div>
 
   //       <div class="info country p-3" data-id="1234">
-  //         <h5>Germany</h5>
+  //         <h6>Germany</h6>
   //         <p>Population</p>
   //         <p>Region</p>
   //         <p>Capital</p>
@@ -52,7 +59,7 @@ class Card {
 
   createToggleDiv() {
     this.toggleDiv = document.createElement("div");
-    this.toggleDiv.className = "toggle country d-none p-3 pt-0";
+    this.toggleDiv.className = "toggle country d-none";
     this.toggleDiv.dataset.id = this.id;
 
     for (let i = 0; i < 9; i++) {
@@ -61,25 +68,30 @@ class Card {
     }
 
     const pNodes = this.toggleDiv.childNodes;
-    pNodes[0].textContent = this.subregion;
-    pNodes[1].textContent = this.timezone;
-    this.regionalBlocs.forEach(element=>{
-        pNodes[2].textContent+=`${element.name}, `
-    });;
-    this.languages.forEach(element=>{
-        pNodes[3].textContent+=`${element.name}, `
-    });;
-    this.currencies.forEach(element=>{
-        pNodes[4].textContent+=`${element.name}, `
+    pNodes[0].textContent = `Subregion: ${this.subregion}`;
+    pNodes[1].textContent = `Timezones: ${this.timezone}`;
+    pNodes[2].textContent="Regional Blocs: ";
+    this.regionalBlocs.forEach((element) => {
+      pNodes[2].textContent += `${element.name}, `;
     });
-    this.borders.forEach(element=>{
-        pNodes[5].textContent+=`${element}, `;
+    pNodes[3].textContent="Languages: ";
+    this.languages.forEach((element) => {
+      pNodes[3].textContent += `${element.name}, `;
     });
-     this.callingCode.forEach(element=>{
-        pNodes[6].textContent+=`${element}, `;
-     });
-    pNodes[7].textContent = this.demonym;
-    pNodes[8].textContent = this.nativeName;
+    pNodes[4].textContent="Currencies: ";
+    this.currencies.forEach((element) => {
+      pNodes[4].textContent += `${element.name}, `;
+    });
+    pNodes[5].textContent="Borders: ";
+    this.borders.forEach((element) => {
+      pNodes[5].textContent += `${element}, `;
+    });
+    pNodes[6].textContent="Calling Codes: ";
+    this.callingCode.forEach((element) => {
+      pNodes[6].textContent += `${element}, `;
+    });
+    pNodes[7].textContent = `Demonym: ${this.demonym}`;
+    pNodes[8].textContent = `Native Name: ${this.nativeName};`
 
     return this;
   }
@@ -88,18 +100,20 @@ class Card {
     this.InfoDiv = document.createElement("div");
     this.InfoDiv.className = "info country p-3";
     this.InfoDiv.dataset.id = this.id;
-    const h5 = document.createElement("h5");
-    h5.textContent = this.country;
-    this.InfoDiv.appendChild(h5);
+    const h6 = document.createElement("h6");
+    h6.textContent = this.country;
+    this.InfoDiv.appendChild(h6);
     for (let i = 0; i < 3; i++) {
       const p = document.createElement("p");
       this.InfoDiv.appendChild(p);
     }
     const pNodes = this.InfoDiv.childNodes;
-    pNodes[1].textContent = this.population.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    pNodes[2].textContent = this.region;
-    pNodes[3].textContent = this.capital;
-
+    pNodes[1].textContent = `Population: ${this.population
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    pNodes[2].textContent = `Region: ${this.region}`;
+    pNodes[3].textContent = `Capital: ${this.capital}`;
+this.InfoDiv.appendChild(this.toggleDiv);
     return this;
   }
 
@@ -124,13 +138,44 @@ class Card {
 
     this.card.appendChild(this.flagDiv);
     this.card.appendChild(this.InfoDiv);
-    this.card.appendChild(this.toggleDiv);
+    
     this.CardsDiv.appendChild(this.card);
   }
 }
 
 Card.prototype.CardsDiv = document.getElementById("cards");
 
+
+(async () => {
+  const result = await window.Api.getAllCountries();
+  const arr=getStorage();
+  if(searchValue.toString()!="null"){
+    searchField.value=searchValue;
+    if(arr){
+      arr.forEach(element=>{
+        element.createToggleDiv();
+        element.createInfoDiv();
+        element.createFlagDiv();
+        element.createCard();
+      })
+    } else {outerCardDiv.innerHTML=null;}
+  } else{
+
+  result.forEach((element) => {
+    const card = new Card(element);
+    card.createToggleDiv();
+    card.createInfoDiv();
+    card.createFlagDiv();
+    card.createCard();
+  });
+  }
+  addSearchEventListeners(result);
+})();
+
+logOutBtn.addEventListener("click", (event) => {
+  localStorage.removeItem(window.storageKey);
+  navigateToIndex();
+});
 outerCardDiv.addEventListener("click", (event) => {
   if (event.target.parentNode.classList.contains("country")) {
     console.log(event.target.parentNode);
@@ -144,7 +189,6 @@ outerCardDiv.addEventListener("click", (event) => {
         break;
       }
     }
-    console.log(toggleDiv);
     const cards = document.getElementsByClassName("card");
     let card = null;
     for (let i = 0; i < cards.length; i++) {
@@ -159,30 +203,69 @@ outerCardDiv.addEventListener("click", (event) => {
   }
 });
 
-logOutBtn.addEventListener("click", (event) => {
-  localStorage.removeItem(window.storageKey);
-  navigateToIndex();
-});
 
-// let result="";
-// async function f(){
-//     result = await window.Api.getAllCountries();
-//     console.log(result);
-//     return result;
-// }
-// window.onload=f();
+function addSearchEventListeners(resp) {
+  searchBtn.addEventListener("click", () => {
+    if (searchField.value != "") {
+      outerCardDiv.innerHTML=null;
+      const searchTerm = searchField.value;
 
-// fetch("https://restcountries.eu/rest/v2/all").then((response)=>{
-//     return response.json()
-// }).then(data=>console.log(data)).catch(error=>console.log(error));
-
-(async () => {
-  const result = await window.Api.getAllCountries();
-  result.forEach(element => {
-      const card=new Card(element);
-      card.createToggleDiv();
-      card.createInfoDiv();
-      card.createFlagDiv();
-      card.createCard();
+      resp.forEach((element) => {
+        Object.values(element).forEach((value) => {
+          if (value == searchTerm) {
+            const card = new Card(element);
+            card.createToggleDiv();
+            card.createInfoDiv();
+            card.createFlagDiv();
+            card.createCard();
+            searchedCountries.push(element);
+          }
+        });
+      });
+      setStorage(searchTerm,searchedCountries);
+    } else{
+      resp.forEach((element) => {
+        const card = new Card(element);
+        card.createToggleDiv();
+        card.createInfoDiv();
+        card.createFlagDiv();
+        card.createCard();
+        setStorage(null,resp);
+      });
+    }
   });
-})();
+  searchField.addEventListener("change",()=>{
+    if(searchField.value==""){
+      resp.forEach((element) => {
+        const card = new Card(element);
+        card.createToggleDiv();
+        card.createInfoDiv();
+        card.createFlagDiv();
+        card.createCard();
+        setStorage(null,resp);
+      });
+    }
+  });
+}
+
+
+function getStorage(){
+  searchValue=localStorage.getItem(searchValueStorageKey);
+
+if(searchValue){
+  const list=JSON.parse(localStorage.getItem(countryStorageKey));
+  let cardsArray=[];
+  if(list){
+  list.forEach(element=>{
+    const card=new Card(element);
+    cardsArray.push(card);
+  })
+}
+  return cardsArray;
+}
+}
+
+function setStorage(item,array){
+localStorage.setItem(searchValueStorageKey,item);
+localStorage.setItem(countryStorageKey,JSON.stringify(array));
+}
