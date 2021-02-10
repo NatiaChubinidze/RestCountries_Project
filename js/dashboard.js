@@ -1,12 +1,12 @@
-const countryStorageKey="App:Country_Storage";
-const searchValueStorageKey="App:Search_Value";
+const countryStorageKey = "App:Country_Storage";
+const searchValueStorageKey = "App:Search_Value";
 
 const logOutBtn = document.getElementById("logOut");
 const outerCardDiv = document.getElementById("cards");
 const searchField = document.getElementById("search");
 const searchBtn = document.getElementById("searchBtn");
-let searchValue="";
-let searchedCountries=[];
+let searchValue = "";
+let searchedCountries = [];
 
 class Card {
   // <div class="card country" data-id="1234" id="card">
@@ -70,28 +70,28 @@ class Card {
     const pNodes = this.toggleDiv.childNodes;
     pNodes[0].textContent = `Subregion: ${this.subregion}`;
     pNodes[1].textContent = `Timezones: ${this.timezone}`;
-    pNodes[2].textContent="Regional Blocs: ";
+    pNodes[2].textContent = "Regional Blocs: ";
     this.regionalBlocs.forEach((element) => {
       pNodes[2].textContent += `${element.name}, `;
     });
-    pNodes[3].textContent="Languages: ";
+    pNodes[3].textContent = "Languages: ";
     this.languages.forEach((element) => {
       pNodes[3].textContent += `${element.name}, `;
     });
-    pNodes[4].textContent="Currencies: ";
+    pNodes[4].textContent = "Currencies: ";
     this.currencies.forEach((element) => {
       pNodes[4].textContent += `${element.name}, `;
     });
-    pNodes[5].textContent="Borders: ";
+    pNodes[5].textContent = "Borders: ";
     this.borders.forEach((element) => {
       pNodes[5].textContent += `${element}, `;
     });
-    pNodes[6].textContent="Calling Codes: ";
+    pNodes[6].textContent = "Calling Codes: ";
     this.callingCode.forEach((element) => {
       pNodes[6].textContent += `${element}, `;
     });
     pNodes[7].textContent = `Demonym: ${this.demonym}`;
-    pNodes[8].textContent = `Native Name: ${this.nativeName};`
+    pNodes[8].textContent = `Native Name: ${this.nativeName};`;
 
     return this;
   }
@@ -113,7 +113,7 @@ class Card {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     pNodes[2].textContent = `Region: ${this.region}`;
     pNodes[3].textContent = `Capital: ${this.capital}`;
-this.InfoDiv.appendChild(this.toggleDiv);
+    this.InfoDiv.appendChild(this.toggleDiv);
     return this;
   }
 
@@ -138,36 +138,35 @@ this.InfoDiv.appendChild(this.toggleDiv);
 
     this.card.appendChild(this.flagDiv);
     this.card.appendChild(this.InfoDiv);
-    
+
     this.CardsDiv.appendChild(this.card);
   }
 }
 
 Card.prototype.CardsDiv = document.getElementById("cards");
 
-
 (async () => {
   const result = await window.Api.getAllCountries();
-  const arr=getStorage();
-  if(searchValue.toString()!="null"){
-    searchField.value=searchValue;
-    if(arr){
-      arr.forEach(element=>{
+  const clonedArray=getClone(result);
+  const arr = getStorage();
+  if (JSON.stringify(searchValue)!= "null") {
+    searchField.value = searchValue;
+    if (arr) {
+      arr.forEach((element) => {
         element.createToggleDiv();
         element.createInfoDiv();
         element.createFlagDiv();
         element.createCard();
-      })
-    } else {outerCardDiv.innerHTML=null;}
-  } else{
-
-  result.forEach((element) => {
-    const card = new Card(element);
-    card.createToggleDiv();
-    card.createInfoDiv();
-    card.createFlagDiv();
-    card.createCard();
-  });
+      });
+    } else {
+      outerCardDiv.innerHTML = null;
+    }
+  } else {
+    console.log(clonedArray);
+    generateCards(clonedArray.slice(0,20));
+    clonedArray.splice(0,20);
+    const btn = generateLoadButton(1,clonedArray);
+    outerCardDiv.appendChild(btn);
   }
   addSearchEventListeners(result);
 })();
@@ -177,7 +176,10 @@ logOutBtn.addEventListener("click", (event) => {
   navigateToIndex();
 });
 outerCardDiv.addEventListener("click", (event) => {
-  if (event.target.parentNode.classList.contains("country")) {
+  if (
+    event.target.parentNode.classList.contains("country") &&
+    event.target.tagName != "BUTTON"
+  ) {
     console.log(event.target.parentNode);
     const id = event.target.parentNode.dataset.id;
     console.log(id);
@@ -203,11 +205,10 @@ outerCardDiv.addEventListener("click", (event) => {
   }
 });
 
-
 function addSearchEventListeners(resp) {
   searchBtn.addEventListener("click", () => {
     if (searchField.value != "") {
-      outerCardDiv.innerHTML=null;
+      outerCardDiv.innerHTML = null;
       const searchTerm = searchField.value;
 
       resp.forEach((element) => {
@@ -222,50 +223,110 @@ function addSearchEventListeners(resp) {
           }
         });
       });
-      setStorage(searchTerm,searchedCountries);
-    } else{
+      setStorage(searchTerm, searchedCountries);
+    } else {
       resp.forEach((element) => {
         const card = new Card(element);
         card.createToggleDiv();
         card.createInfoDiv();
         card.createFlagDiv();
         card.createCard();
-        setStorage(null,resp);
+        setStorage(null, resp);
       });
     }
   });
-  searchField.addEventListener("change",()=>{
-    if(searchField.value==""){
+  searchField.addEventListener("change", () => {
+    if (searchField.value == "") {
       resp.forEach((element) => {
         const card = new Card(element);
         card.createToggleDiv();
         card.createInfoDiv();
         card.createFlagDiv();
         card.createCard();
-        setStorage(null,resp);
+        setStorage(null, resp);
       });
     }
   });
 }
 
+function getStorage() {
+  searchValue = localStorage.getItem(searchValueStorageKey);
 
-function getStorage(){
-  searchValue=localStorage.getItem(searchValueStorageKey);
-
-if(searchValue){
-  const list=JSON.parse(localStorage.getItem(countryStorageKey));
-  let cardsArray=[];
-  if(list){
-  list.forEach(element=>{
-    const card=new Card(element);
-    cardsArray.push(card);
-  })
-}
-  return cardsArray;
-}
+  if (searchValue) {
+    const list = JSON.parse(localStorage.getItem(countryStorageKey));
+    let cardsArray = [];
+    if (list) {
+      list.forEach((element) => {
+        const card = new Card(element);
+        cardsArray.push(card);
+      });
+    }
+    return cardsArray;
+  }
 }
 
-function setStorage(item,array){
-localStorage.setItem(searchValueStorageKey,item);
-localStorage.setItem(countryStorageKey,JSON.stringify(array));
+function setStorage(item, array) {
+  localStorage.setItem(searchValueStorageKey, item);
+  localStorage.setItem(countryStorageKey, JSON.stringify(array));
+}
+
+function generateCards(array) {
+  array.forEach((element) => {
+    const card = new Card(element);
+    card.createToggleDiv();
+    card.createInfoDiv();
+    card.createFlagDiv();
+    card.createCard();
+  });
+}
+
+function generateLoadButton(pageNumber,array){
+  const loadBtn = document.createElement("button");
+  loadBtn.className = "btn btn-primary col-12 btn-block mt-3 loadBtn";
+  loadBtn.textContent = "Load More";
+  loadBtn.dataset.page = `${pageNumber}`;
+  loadBtn.dataset.totalPages=`${Math.ceil(250/20)}`;
+
+  let options = {
+    root: null,
+    rootMargin: "20px",
+    threshold: 1.0,
+  };
+
+  const callback = (entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const { target } = entry;
+
+        let page = parseInt(target.dataset.page);
+        const totalPages = parseInt(target.dataset.totalPages);
+        console.log(page,totalPages);
+
+        if (page < totalPages) {
+          page ++;
+          target.dataset.page = page;
+          console.log(array);
+          const arrayToGenerate=array.slice(0,20);
+          array.splice(0,20);
+          generateCards(arrayToGenerate);
+          target.remove();
+          if(page!=totalPages){outerCardDiv.appendChild(loadBtn);}
+          
+        } 
+      }
+    });
+  };
+  let observer = new IntersectionObserver(callback, options);
+
+  observer.observe(loadBtn);
+  return loadBtn;
+}
+
+
+function getClone(arr){
+  let clonedArray=[];
+  for(let i=0;i <arr.length;i++){
+    clonedArray[i]=arr[i]
+  }
+  return clonedArray;
 }
