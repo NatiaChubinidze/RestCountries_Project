@@ -145,31 +145,34 @@ class Card {
 
 Card.prototype.CardsDiv = document.getElementById("cards");
 
+
+
 (async () => {
   const result = await window.Api.getAllCountries();
   const clonedArray=getClone(result);
   const arr = getStorage();
-  if (JSON.stringify(searchValue)!= "null") {
+  
+  if (searchValue!= null) {
     searchField.value = searchValue;
     if (arr) {
-      arr.forEach((element) => {
-        element.createToggleDiv();
-        element.createInfoDiv();
-        element.createFlagDiv();
-        element.createCard();
-      });
+      generateCards(arr);
+      
     } else {
       outerCardDiv.innerHTML = null;
     }
   } else {
-    console.log(clonedArray);
     generateCards(clonedArray.slice(0,20));
     clonedArray.splice(0,20);
     const btn = generateLoadButton(1,clonedArray);
     outerCardDiv.appendChild(btn);
   }
-  addSearchEventListeners(result);
+  const searchArray=getClone(result);
+  addSearchEventListeners(searchArray);
 })();
+
+
+
+
 
 logOutBtn.addEventListener("click", (event) => {
   localStorage.removeItem(window.storageKey);
@@ -205,10 +208,14 @@ outerCardDiv.addEventListener("click", (event) => {
   }
 });
 
+
+
+
 function addSearchEventListeners(resp) {
   searchBtn.addEventListener("click", () => {
+    outerCardDiv.innerHTML = null;
+
     if (searchField.value != "") {
-      outerCardDiv.innerHTML = null;
       const searchTerm = searchField.value;
 
       resp.forEach((element) => {
@@ -225,32 +232,38 @@ function addSearchEventListeners(resp) {
       });
       setStorage(searchTerm, searchedCountries);
     } else {
-      resp.forEach((element) => {
-        const card = new Card(element);
-        card.createToggleDiv();
-        card.createInfoDiv();
-        card.createFlagDiv();
-        card.createCard();
-        setStorage(null, resp);
-      });
-    }
+      generateCards(resp.slice(0,20));
+    resp.splice(0,20);
+    const btn = generateLoadButton(1,resp);
+    outerCardDiv.appendChild(btn);
+        localStorage.removeItem(countryStorageKey);
+        localStorage.removeItem(searchValueStorageKey);
+    
+      }
   });
+  
   searchField.addEventListener("change", () => {
+    outerCardDiv.innerHTML = null;
     if (searchField.value == "") {
-      resp.forEach((element) => {
-        const card = new Card(element);
-        card.createToggleDiv();
-        card.createInfoDiv();
-        card.createFlagDiv();
-        card.createCard();
-        setStorage(null, resp);
-      });
+      generateCards(resp.slice(0,20));
+    resp.splice(0,20);
+    const btn = generateLoadButton(1,resp);
+    outerCardDiv.appendChild(btn);
+        localStorage.removeItem(countryStorageKey);
+        localStorage.removeItem(searchValueStorageKey);
+      
     }
   });
 }
 
+
+
+
+
+
+
 function getStorage() {
-  searchValue = localStorage.getItem(searchValueStorageKey);
+  searchValue = JSON.parse(localStorage.getItem(searchValueStorageKey));
 
   if (searchValue) {
     const list = JSON.parse(localStorage.getItem(countryStorageKey));
@@ -266,7 +279,7 @@ function getStorage() {
 }
 
 function setStorage(item, array) {
-  localStorage.setItem(searchValueStorageKey, item);
+  localStorage.setItem(searchValueStorageKey, JSON.stringify(item));
   localStorage.setItem(countryStorageKey, JSON.stringify(array));
 }
 
@@ -279,6 +292,7 @@ function generateCards(array) {
     card.createCard();
   });
 }
+
 
 function generateLoadButton(pageNumber,array){
   const loadBtn = document.createElement("button");
