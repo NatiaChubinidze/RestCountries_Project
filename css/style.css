@@ -1,64 +1,63 @@
-.container{
-    width:1200px;
-    min-height:120vh;
-    margin:0 auto;
+.container {
+  width: 1200px;
+  min-height: 120vh;
+  margin: 0 auto;
 }
 
-.cards{
-    min-height:70vh;
+.cards {
+  min-height: 70vh;
 }
-.card{
-    width:23%;
-    height:45vh;
-    font-family:'Times New Roman', Times, serif;
-    box-shadow: 5px 5px 5px #dad7d7;
-    border-radius:5% 5% 5% 5%;
+.card {
+  width: 23%;
+  height: 45vh;
+  font-family: "Times New Roman", Times, serif;
+  box-shadow: 5px 5px 5px #dad7d7;
+  border-radius: 5% 5% 5% 5%;
 }
-.card:not(:nth-last-child(-n+4)){
-    margin-bottom:3%;
-}
-
-.flag{
-    width:100%;
-    height:22vh;
-}
-.info{
-    width:100%;
-    height:23vh;
+.card:not(:nth-last-child(-n + 4)) {
+  margin-bottom: 3%;
 }
 
-.toggle{
-    height:38vh;
-    width:100%;
+.flag {
+  width: 100%;
+  height: 22vh;
 }
-.toggleHeight{
-    height:83vh;
-}
-
-.log-out{
-   right:10px;
+.info {
+  width: 100%;
+  height: 23vh;
 }
 
-.inputInfo{
-    padding:10px;
+.toggle {
+  height: 38vh;
+  width: 100%;
 }
-.flag img{
-    width:100%;
-    height:100%;
-    object-fit: cover;
-    
+.toggleHeight {
+  height: 83vh;
 }
 
-.card p{
-    margin-bottom:0.5%;
-    font-size:small;
-    font-weight:500;
-}
-h6{
-    font-weight:700;
+.log-out {
+  right: 10px;
 }
 
-.loadBtn{
-    height:8vh;
-    padding:10px;
+.inputInfo {
+  padding: 10px;
+}
+.flag img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card p {
+  margin-bottom: 0.5%;
+  font-size: small;
+  font-weight: 500;
+}
+h6 {
+  font-weight: 700;
+}
+
+.loadBtn {
+  height: 8vh;
+  padding: 10px;
 }

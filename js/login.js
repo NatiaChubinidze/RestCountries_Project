@@ -1,7 +1,6 @@
 const form = document.getElementById("signInForm");
 const userToken = localStorage.getItem(window.storageKey);
 
-
 if (userToken) {
   navigateToDashboard();
 }

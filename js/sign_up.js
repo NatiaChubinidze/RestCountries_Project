@@ -1,6 +1,5 @@
 const form = document.getElementById("signUpForm");
 
-
 class errorsCheck {
   errorsString = null;
   check(item = {}) {
@@ -32,8 +31,8 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-form.addEventListener("click",event=>{
-    if(event.target.classList.contains("btn-link")){
-        navigateToIndex();
-    }
-})
+form.addEventListener("click", (event) => {
+  if (event.target.classList.contains("btn-link")) {
+    navigateToIndex();
+  }
+});

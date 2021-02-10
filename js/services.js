@@ -60,14 +60,11 @@ class Api {
       baseUrl = this.baseUrlReqResIn;
     } else {
       baseUrl = this.baseUrlRestCountries;
-      console.log(baseUrl)
+      console.log(baseUrl);
     }
     try {
       console.log(`${baseUrl}${endpointInfo.endPoint}`);
-      const response = await fetch(
-        `${baseUrl}${endpointInfo.endPoint}`,
-        data
-      );
+      const response = await fetch(`${baseUrl}${endpointInfo.endPoint}`, data);
       const result = await response.json();
       return result;
     } catch (error) {
@@ -105,7 +102,11 @@ class Api {
   async getAllCountries() {
     try {
       const request = this.createRequest("countries", "");
-      const result = this.fetchRequest("restcountries",request.endPointInfo,null);
+      const result = this.fetchRequest(
+        "restcountries",
+        request.endPointInfo,
+        null
+      );
       return result;
     } catch (error) {
       console.log(error);

@@ -153,7 +153,6 @@ Card.prototype.CardsDiv = document.getElementById("cards");
   if (searchValue != null) {
     searchField.value = searchValue;
     if (arr) {
-      
       generateCards(arr);
     } else {
       outerCardDiv.innerHTML = null;
@@ -177,9 +176,8 @@ outerCardDiv.addEventListener("click", (event) => {
     event.target.parentNode.classList.contains("country") &&
     event.target.tagName != "BUTTON"
   ) {
-    
     const id = event.target.parentNode.dataset.id;
-    
+
     let toggleDiv = null;
     const toggles = document.getElementsByClassName("toggle");
     for (let i = 0; i < toggles.length; i++) {
@@ -204,9 +202,9 @@ outerCardDiv.addEventListener("click", (event) => {
 
 function addSearchEventListeners(resp) {
   searchBtn.addEventListener("click", () => {
-    const workArray=getClone(resp);
-    
-    searchedCountries=[];
+    const workArray = getClone(resp);
+
+    searchedCountries = [];
     outerCardDiv.innerHTML = null;
 
     if (searchField.value != "") {
@@ -214,31 +212,28 @@ function addSearchEventListeners(resp) {
 
       resp.forEach((element) => {
         Object.values(element).forEach((value) => {
-          
-          if(typeof value=="string"){
-            const searchValue=value.toString().toLowerCase();
-          
-            
-          if (searchValue.search(searchTerm)!=-1) {
-            const card = new Card(element);
-            let boolean=true;
-            searchedCountries.forEach(element=>{
-              if(element.name == card.name){
-                boolean=false; 
-                return;
+          if (typeof value == "string") {
+            const searchValue = value.toString().toLowerCase();
+
+            if (searchValue.search(searchTerm) != -1) {
+              const card = new Card(element);
+              let boolean = true;
+              searchedCountries.forEach((element) => {
+                if (element.name == card.name) {
+                  boolean = false;
+                  return;
+                }
+              });
+
+              if (boolean) {
+                card.createToggleDiv();
+                card.createInfoDiv();
+                card.createFlagDiv();
+                card.createCard();
+                searchedCountries.push(card);
               }
-            })
-            
-            if(boolean){
-              card.createToggleDiv();
-            card.createInfoDiv();
-            card.createFlagDiv();
-            card.createCard();
-              searchedCountries.push(card);
             }
-            
           }
-        }
         });
       });
       setStorage(searchTerm, searchedCountries);
@@ -253,7 +248,7 @@ function addSearchEventListeners(resp) {
   });
 
   searchField.addEventListener("change", () => {
-    const workArray=getClone(resp);
+    const workArray = getClone(resp);
     outerCardDiv.innerHTML = null;
     if (searchField.value == "") {
       generateCards(workArray.slice(0, 20));
@@ -275,7 +270,7 @@ function getStorage() {
     if (list) {
       list.forEach((element) => {
         const card = new Card(element);
-        
+
         cardsArray.push(card);
       });
     }
@@ -318,12 +313,11 @@ function generateLoadButton(pageNumber, array) {
 
         let page = parseInt(target.dataset.page);
         const totalPages = parseInt(target.dataset.totalPages);
-        
 
         if (page < totalPages) {
           page++;
           target.dataset.page = page;
-          
+
           const arrayToGenerate = array.slice(0, 20);
           array.splice(0, 20);
           generateCards(arrayToGenerate);
