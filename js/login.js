@@ -1,7 +1,9 @@
+const {ApiObject,StorageObject}= window;
+const {STORAGE_KEY_TOKEN}=window;
+const {userToken} = window;
 const form = document.getElementById("signInForm");
-const userToken = localStorage.getItem(window.storageKey);
 
-if (userToken) {
+if(userToken){
   navigateToDashboard();
 }
 
@@ -17,9 +19,9 @@ form.addEventListener("submit", async (event) => {
       "Info is missing. Please, fill in both fields (email and password)"
     );
   } else {
-    const result = await window.Api.logIn(userInfo);
+    const result = await ApiObject.logIn(userInfo);
     if (result) {
-      storeToken(result.token);
+      StorageObject.setStorage(STORAGE_KEY_TOKEN,result.token);
       navigateToDashboard();
     }
   }

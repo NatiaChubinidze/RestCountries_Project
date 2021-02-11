@@ -1,16 +1,18 @@
-window.storageKey = "userToken";
+
+window.STORAGE_KEY_TOKEN="userToken";
+
 
 class Api {
   baseUrlReqResIn = "https://reqres.in/api";
   baseUrlRestCountries = "https://restcountries.eu/rest";
 
   constructor() {
-    if (localStorage.getItem(window.storageKey)) {
-      this._token = localStorage.getItem(storageKey);
+    if (localStorage.getItem(window.STORAGE_KEY_TOKEN)) {
+      this._token = localStorage.getItem(window.STORAGE_KEY_TOKEN);
     }
   }
   set token(token) {
-    this._token = localStorage.setItem(window.storageKey, token);
+    this._token = localStorage.setItem(window.STORAGE_KEY_TOKEN, token);
   }
   get token() {
     return this._token;
@@ -24,7 +26,6 @@ class Api {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // "Access-Control-Allow-Headers": "*"
       },
       body: null,
     };
@@ -39,7 +40,6 @@ class Api {
       case "countries":
         endPointInfo.endPoint = "/v2/all";
         options.method = "GET";
-        // options.mode="no-cors";
         break;
 
       default:
@@ -114,13 +114,28 @@ class Api {
   }
 }
 
+class Storage {
+  constructor() {
+    this.storage = localStorage;
+  }
+  setStorage(key, value) {
+    this.storage.setItem(key, JSON.stringify(value));
+  }
+  getStorage(key) {
+    return JSON.parse(this.storage.getItem(key));
+  }
+  deleteStorageOnKey(key_one,key_two) {
+    this.storage.removeItem(key_one);
+    if(key_two){
+    this.storage.removeItem(key_two);
+    }
+  }
+}
+
 function navigateToIndex() {
   location.replace("index.html");
 }
 
-function storeToken(token) {
-  localStorage.setItem(window.storageKey, token);
-}
 function navigateToDashboard() {
   location.replace("dashboard.html");
 }
@@ -129,4 +144,20 @@ function navigateToSignUp() {
   location.replace("sign_up.html");
 }
 
-window.Api = new Api();
+// function storeToken(token) {
+//   localStorage.setItem(window.storageKey, token);
+// }
+
+// function checkUser(){
+//   const token=window.Storage.getStorage(window.storageKey);
+//   console.log(token);
+//   if(token){
+//     navigateToDashboard();
+//   } else {
+//     navigateToIndex();
+//   }
+// }
+
+window.ApiObject = new Api();
+window.StorageObject = new Storage();
+

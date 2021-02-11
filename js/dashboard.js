@@ -1,39 +1,21 @@
-const countryStorageKey = "App:Country_Storage";
-const searchValueStorageKey = "App:Search_Value";
+const { ApiObject, StorageObject} = window;
+const {STORAGE_KEY_TOKEN}=window;
+window.userToken = StorageObject.getStorage(STORAGE_KEY_TOKEN);
+const {userToken}=window;
+const COUNTRY_STORAGE_KEY = "App:Country_Storage";
+const SEARCH_VALUE_STORAGE_KEY = "App:Search_Value";
 
 const logOutBtn = document.getElementById("logOut");
 const outerCardDiv = document.getElementById("cards");
 const searchField = document.getElementById("search");
 const searchBtn = document.getElementById("searchBtn");
 let searchValue = "";
-let searchedCountries = [];
+
+if(!userToken){
+  navigateToIndex();
+}
 
 class Card {
-  // <div class="card country" data-id="1234" id="card">
-  //       <div class="flag country" data-id="1234">
-  //         <img src="pics/cat.png" />
-  //       </div>
-
-  //       <div class="info country p-3" data-id="1234">
-  //         <h6>Germany</h6>
-  //         <p>Population</p>
-  //         <p>Region</p>
-  //         <p>Capital</p>
-  //       </div>
-
-  //       <div class="toggle country d-none p-3 pt-0" data-id="1234">
-  //         <p>Subregion</p>
-  //         <p>Timezone</p>
-  //         <p>Regional Blocks</p>
-  //         <p>Languages</p>
-  //         <p>Currencies</p>
-  //         <p>Borders</p>
-  //         <p>Calling Code</p>
-  //         <p>Demonym</p>
-  //         <p>Native Name</p>
-  //       </div>
-  //     </div>
-
   constructor(country) {
     this.id = Math.floor(Math.random() * 100000);
     this.card = null;
@@ -160,15 +142,16 @@ class Card {
     this.card.appendChild(this.InfoDiv);
 
     this.CardsDiv.appendChild(this.card);
+    return this;
   }
 }
 
 Card.prototype.CardsDiv = document.getElementById("cards");
 
 (async () => {
-  const result = await window.Api.getAllCountries();
+  const result = await ApiObject.getAllCountries();
   const clonedArray = getClone(result);
-  const arr = getStorage();
+  const arr = getStorageInfo();
 
   if (searchValue != null) {
     searchField.value = searchValue;
@@ -187,8 +170,8 @@ Card.prototype.CardsDiv = document.getElementById("cards");
   addSearchEventListeners(searchArray);
 })();
 
-logOutBtn.addEventListener("click", (event) => {
-  localStorage.removeItem(window.storageKey);
+logOutBtn.addEventListener("click", () => {
+  StorageObject.deleteStorageOnKey(STORAGE_KEY_TOKEN,"");
   navigateToIndex();
 });
 outerCardDiv.addEventListener("click", (event) => {
@@ -223,7 +206,7 @@ outerCardDiv.addEventListener("click", (event) => {
 function addSearchEventListeners(resp) {
   searchBtn.addEventListener("click", () => {
     const workArray = getClone(resp);
-    searchedCountries = [];
+    let searchedCountries = [];
     outerCardDiv.innerHTML = null;
 
     if (searchField.value != "") {
@@ -255,14 +238,15 @@ function addSearchEventListeners(resp) {
           
         }
       });
-      setStorage(searchTerm, searchedCountries);
+      StorageObject.setStorage(SEARCH_VALUE_STORAGE_KEY,searchTerm);
+      StorageObject.setStorage(COUNTRY_STORAGE_KEY,searchedCountries);
+      // setStorage(searchTerm, searchedCountries);
     } else {
       generateCards(workArray.slice(0, 20));
       workArray.splice(0, 20);
       const btn = generateLoadButton(1, workArray);
       outerCardDiv.appendChild(btn);
-      localStorage.removeItem(countryStorageKey);
-      localStorage.removeItem(searchValueStorageKey);
+      StorageObject.deleteStorageOnKey(COUNTRY_STORAGE_KEY,SEARCH_VALUE_STORAGE_KEY);
     }
   });
 
@@ -274,22 +258,21 @@ function addSearchEventListeners(resp) {
       workArray.splice(0, 20);
       const btn = generateLoadButton(1, workArray);
       outerCardDiv.appendChild(btn);
-      localStorage.removeItem(countryStorageKey);
-      localStorage.removeItem(searchValueStorageKey);
+      StorageObject.deleteStorageOnKey(COUNTRY_STORAGE_KEY,SEARCH_VALUE_STORAGE_KEY);
+      
     }
   });
 }
 
-function getStorage() {
-  searchValue = JSON.parse(localStorage.getItem(searchValueStorageKey));
+function getStorageInfo() {
+  searchValue = StorageObject.getStorage(SEARCH_VALUE_STORAGE_KEY);
 
   if (searchValue) {
-    const list = JSON.parse(localStorage.getItem(countryStorageKey));
+    const list = StorageObject.getStorage(COUNTRY_STORAGE_KEY);
     let cardsArray = [];
     if (list) {
       list.forEach((element) => {
         const card = new Card(element);
-
         cardsArray.push(card);
       });
     }
@@ -297,18 +280,16 @@ function getStorage() {
   }
 }
 
-function setStorage(item, array) {
-  localStorage.setItem(searchValueStorageKey, JSON.stringify(item));
-  localStorage.setItem(countryStorageKey, JSON.stringify(array));
-}
+// function setStorage(item, array) {
+//   localStorage.setItem(searchValueStorageKey, JSON.stringify(item));
+//   localStorage.setItem(countryStorageKey, JSON.stringify(array));
+// }
+
 
 function generateCards(array) {
   array.forEach((element) => {
     const card = new Card(element);
-    card.createToggleDiv();
-    card.createInfoDiv();
-    card.createFlagDiv();
-    card.createCard();
+    card.createToggleDiv().createInfoDiv().createFlagDiv().createCard();
   });
 }
 
@@ -361,3 +342,4 @@ function getClone(arr) {
   }
   return clonedArray;
 }
+

@@ -1,3 +1,5 @@
+const {ApiObject,StorageObject} = window;
+const {STORAGE_KEY_TOKEN}=window;
 const form = document.getElementById("signUpForm");
 
 class errorsCheck {
@@ -23,9 +25,9 @@ form.addEventListener("submit", async (event) => {
   if (checkResult) {
     console.log(checkError.errorsString);
   } else {
-    const result = await window.Api.register(userInfo);
+    const result = await ApiObject.register(userInfo);
     if (result) {
-      storeToken(result.token);
+      StorageObject.setStorage(STORAGE_KEY_TOKEN,result.token);
       navigateToDashboard();
     }
   }
