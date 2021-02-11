@@ -1,7 +1,7 @@
-const { ApiObject, StorageObject} = window;
-const {STORAGE_KEY_TOKEN}=window;
-window.userToken = StorageObject.getStorage(STORAGE_KEY_TOKEN);
-const {userToken}=window;
+const { ApiObject, StorageObject } = window;
+const { STORAGE_KEY_TOKEN } = window;
+
+const { userToken } = window;
 const COUNTRY_STORAGE_KEY = "App:Country_Storage";
 const SEARCH_VALUE_STORAGE_KEY = "App:Search_Value";
 
@@ -11,7 +11,7 @@ const searchField = document.getElementById("search");
 const searchBtn = document.getElementById("searchBtn");
 let searchValue = "";
 
-if(!userToken){
+if (!userToken) {
   navigateToIndex();
 }
 
@@ -171,7 +171,7 @@ Card.prototype.CardsDiv = document.getElementById("cards");
 })();
 
 logOutBtn.addEventListener("click", () => {
-  StorageObject.deleteStorageOnKey(STORAGE_KEY_TOKEN,"");
+  StorageObject.deleteStorageOnKey(STORAGE_KEY_TOKEN, "");
   navigateToIndex();
 });
 outerCardDiv.addEventListener("click", (event) => {
@@ -219,7 +219,6 @@ function addSearchEventListeners(resp) {
           element.subregion.toString().toLowerCase() == searchTerm ||
           element.alpha3Code.toString().toLowerCase() == searchTerm
         ) {
-         
           const card = new Card(element);
           let boolean = true;
           searchedCountries.forEach((element) => {
@@ -235,18 +234,20 @@ function addSearchEventListeners(resp) {
             card.createCard();
             searchedCountries.push(card);
           }
-          
         }
       });
-      StorageObject.setStorage(SEARCH_VALUE_STORAGE_KEY,searchTerm);
-      StorageObject.setStorage(COUNTRY_STORAGE_KEY,searchedCountries);
+      StorageObject.setStorage(SEARCH_VALUE_STORAGE_KEY, searchTerm);
+      StorageObject.setStorage(COUNTRY_STORAGE_KEY, searchedCountries);
       // setStorage(searchTerm, searchedCountries);
     } else {
       generateCards(workArray.slice(0, 20));
       workArray.splice(0, 20);
       const btn = generateLoadButton(1, workArray);
       outerCardDiv.appendChild(btn);
-      StorageObject.deleteStorageOnKey(COUNTRY_STORAGE_KEY,SEARCH_VALUE_STORAGE_KEY);
+      StorageObject.deleteStorageOnKey(
+        COUNTRY_STORAGE_KEY,
+        SEARCH_VALUE_STORAGE_KEY
+      );
     }
   });
 
@@ -258,8 +259,10 @@ function addSearchEventListeners(resp) {
       workArray.splice(0, 20);
       const btn = generateLoadButton(1, workArray);
       outerCardDiv.appendChild(btn);
-      StorageObject.deleteStorageOnKey(COUNTRY_STORAGE_KEY,SEARCH_VALUE_STORAGE_KEY);
-      
+      StorageObject.deleteStorageOnKey(
+        COUNTRY_STORAGE_KEY,
+        SEARCH_VALUE_STORAGE_KEY
+      );
     }
   });
 }
@@ -284,7 +287,6 @@ function getStorageInfo() {
 //   localStorage.setItem(searchValueStorageKey, JSON.stringify(item));
 //   localStorage.setItem(countryStorageKey, JSON.stringify(array));
 // }
-
 
 function generateCards(array) {
   array.forEach((element) => {
@@ -342,4 +344,3 @@ function getClone(arr) {
   }
   return clonedArray;
 }
-

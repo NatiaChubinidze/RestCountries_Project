@@ -1,9 +1,9 @@
-const {ApiObject,StorageObject}= window;
-const {STORAGE_KEY_TOKEN}=window;
-const {userToken} = window;
+const { ApiObject, StorageObject } = window;
+const { STORAGE_KEY_TOKEN } = window;
+const { userToken } = window;
 const form = document.getElementById("signInForm");
 
-if(userToken){
+if (userToken) {
   navigateToDashboard();
 }
 
@@ -21,7 +21,7 @@ form.addEventListener("submit", async (event) => {
   } else {
     const result = await ApiObject.logIn(userInfo);
     if (result) {
-      StorageObject.setStorage(STORAGE_KEY_TOKEN,result.token);
+      StorageObject.setStorage(STORAGE_KEY_TOKEN, result.token);
       navigateToDashboard();
     }
   }

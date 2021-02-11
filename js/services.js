@@ -1,21 +1,9 @@
-
-window.STORAGE_KEY_TOKEN="userToken";
-
+window.STORAGE_KEY_TOKEN = "userToken";
 
 class Api {
-  baseUrlReqResIn = "https://reqres.in/api";
-  baseUrlRestCountries = "https://restcountries.eu/rest";
-
   constructor() {
-    if (localStorage.getItem(window.STORAGE_KEY_TOKEN)) {
-      this._token = localStorage.getItem(window.STORAGE_KEY_TOKEN);
-    }
-  }
-  set token(token) {
-    this._token = localStorage.setItem(window.STORAGE_KEY_TOKEN, token);
-  }
-  get token() {
-    return this._token;
+    this.baseUrlReqResIn = "https://reqres.in/api";
+    this.baseUrlRestCountries = "https://restcountries.eu/rest";
   }
 
   createRequest(activity, data) {
@@ -124,10 +112,10 @@ class Storage {
   getStorage(key) {
     return JSON.parse(this.storage.getItem(key));
   }
-  deleteStorageOnKey(key_one,key_two) {
+  deleteStorageOnKey(key_one, key_two) {
     this.storage.removeItem(key_one);
-    if(key_two){
-    this.storage.removeItem(key_two);
+    if (key_two) {
+      this.storage.removeItem(key_two);
     }
   }
 }
@@ -160,4 +148,4 @@ function navigateToSignUp() {
 
 window.ApiObject = new Api();
 window.StorageObject = new Storage();
-
+window.userToken = StorageObject.getStorage(STORAGE_KEY_TOKEN);
