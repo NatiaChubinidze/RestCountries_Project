@@ -71,24 +71,44 @@ class Card {
     pNodes[0].textContent = `Subregion: ${this.subregion}`;
     pNodes[1].textContent = `Timezones: ${this.timezones}`;
     pNodes[2].textContent = "Regional Blocs: ";
+    const lastBloc = this.regionalBlocs[this.regionalBlocs.length - 1];
     this.regionalBlocs.forEach((element) => {
-      pNodes[2].textContent += `${element.name}, `;
+      pNodes[2].textContent += `${element.name}`;
+      if (lastBloc.name != element.name) {
+        pNodes[2].textContent += ", ";
+      }
     });
     pNodes[3].textContent = "Languages: ";
+    const lastLanguage = this.languages[this.languages.length - 1];
     this.languages.forEach((element) => {
-      pNodes[3].textContent += `${element.name}, `;
+      pNodes[3].textContent += `${element.name}`;
+      if (lastLanguage.name != element.name) {
+        pNodes[3].textContent += ", ";
+      }
     });
     pNodes[4].textContent = "Currencies: ";
+    const lastCurrency = this.currencies[this.currencies.length - 1];
     this.currencies.forEach((element) => {
-      pNodes[4].textContent += `${element.name}, `;
+      pNodes[4].textContent += `${element.name}`;
+      if (lastCurrency.name != element.name) {
+        pNodes[4].textContent += ", ";
+      }
     });
     pNodes[5].textContent = "Borders: ";
+    const lastBorder = this.borders[this.borders.length - 1];
     this.borders.forEach((element) => {
-      pNodes[5].textContent += `${element}, `;
+      pNodes[5].textContent += `${element}`;
+      if (lastBorder != element) {
+        pNodes[5].textContent += ", ";
+      }
     });
     pNodes[6].textContent = "Calling Codes: ";
+    const lastCode = this.callingCodes[this.callingCodes.length - 1];
     this.callingCodes.forEach((element) => {
-      pNodes[6].textContent += `${element}, `;
+      pNodes[6].textContent += `${element}`;
+      if (lastCode != element) {
+        pNodes[6].textContent += ", ";
+      }
     });
     pNodes[7].textContent = `Demonym: ${this.demonym}`;
     pNodes[8].textContent = `Native Name: ${this.nativeName};`;
@@ -203,38 +223,37 @@ outerCardDiv.addEventListener("click", (event) => {
 function addSearchEventListeners(resp) {
   searchBtn.addEventListener("click", () => {
     const workArray = getClone(resp);
-
     searchedCountries = [];
     outerCardDiv.innerHTML = null;
 
     if (searchField.value != "") {
       const searchTerm = searchField.value.toLowerCase();
-
       resp.forEach((element) => {
-        Object.values(element).forEach((value) => {
-          if (typeof value == "string") {
-            const searchValue = value.toString().toLowerCase();
-
-            if (searchValue.search(searchTerm) != -1) {
-              const card = new Card(element);
-              let boolean = true;
-              searchedCountries.forEach((element) => {
-                if (element.name == card.name) {
-                  boolean = false;
-                  return;
-                }
-              });
-
-              if (boolean) {
-                card.createToggleDiv();
-                card.createInfoDiv();
-                card.createFlagDiv();
-                card.createCard();
-                searchedCountries.push(card);
-              }
+        if (
+          element.name.toString().toLowerCase().includes(searchTerm) ||
+          element.capital.toString().toLowerCase() == searchTerm ||
+          element.region.toString().toLowerCase() == searchTerm ||
+          element.subregion.toString().toLowerCase() == searchTerm ||
+          element.alpha3Code.toString().toLowerCase() == searchTerm
+        ) {
+         
+          const card = new Card(element);
+          let boolean = true;
+          searchedCountries.forEach((element) => {
+            if (element.name == card.name) {
+              boolean = false;
+              return;
             }
+          });
+          if (boolean) {
+            card.createToggleDiv();
+            card.createInfoDiv();
+            card.createFlagDiv();
+            card.createCard();
+            searchedCountries.push(card);
           }
-        });
+          
+        }
       });
       setStorage(searchTerm, searchedCountries);
     } else {
