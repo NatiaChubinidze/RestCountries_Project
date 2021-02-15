@@ -9,30 +9,36 @@
 }
 .card {
   width: 23%;
-  height: 45vh;
+  height: 280px;
   font-family: "Times New Roman", Times, serif;
   box-shadow: 5px 5px 5px #dad7d7;
-  border-radius: 5% 5% 5% 5%;
+  border-radius: 5%;
 }
 .card:not(:nth-last-child(-n + 4)) {
   margin-bottom: 3%;
 }
+/* .card:not(:nth-child(4n)){
+  margin-right:2.59%;
+} */
+.card:hover {
+  cursor: pointer;
+}
 
 .flag {
   width: 100%;
-  height: 22vh;
+  height: 140px;
 }
 .info {
   width: 100%;
-  height: 23vh;
+  height: 140px;
 }
 
 .toggle {
-  height: 38vh;
+  min-height: 100px;
   width: 100%;
 }
 .toggleHeight {
-  height: 83vh;
+  height: 520px;
 }
 
 .log-out {
@@ -60,4 +66,92 @@ h6 {
 .loadBtn {
   height: 8vh;
   padding: 10px;
+}
+
+@media only screen and (max-width: 575px) {
+  .card {
+    width: 30%;
+    height: 260px;
+  }
+  .card:not(:nth-child(3n)) {
+    margin-right: 5%;
+  }
+  .toggle {
+    min-height: 220px;
+  }
+  .toggleHeight {
+    height: 470px;
+  }
+}
+@media only screen and (min-width: 576px) and (max-width: 767px) {
+  h6 {
+    font-size: small;
+  }
+  p {
+    font-size: x-small !important;
+  }
+  .card {
+    width: 30%;
+    height: 250px;
+  }
+  .card:not(:nth-child(3n)) {
+    margin-right: 5%;
+  }
+  .toggle {
+    min-height: 100px;
+  }
+  .toggleHeight {
+    height: 450px;
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 1199px) {
+  p {
+    margin-bottom: 0.5%;
+    font-size: small !important;
+    font-weight: 500;
+  }
+  h6 {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .card {
+    width: 30%;
+    height: 270px;
+  }
+  .card:not(:nth-child(3n)) {
+    margin-right: 5%;
+  }
+  .toggle {
+    min-height: 300px;
+  }
+  .toggleHeight {
+    height: 530px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  p {
+    margin-bottom: 0.5%;
+    font-size: small !important;
+    font-weight: 500;
+  }
+  h6 {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .card {
+    width: 23%;
+    height: 280px;
+  }
+  .card:not(:nth-child(4n)) {
+    margin-right: 2.66%;
+  }
+
+  .toggle {
+    min-height: 100px;
+    width: 100%;
+  }
+  .toggleHeight {
+    height: 520px;
+  }
 }

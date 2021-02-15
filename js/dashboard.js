@@ -148,6 +148,8 @@ class Card {
 
 Card.prototype.CardsDiv = document.getElementById("cards");
 
+
+
 (async () => {
   const result = await ApiObject.getAllCountries();
   const clonedArray = getClone(result);
@@ -170,102 +172,92 @@ Card.prototype.CardsDiv = document.getElementById("cards");
   addSearchEventListeners(searchArray);
 })();
 
+
+
+
 logOutBtn.addEventListener("click", () => {
   StorageObject.deleteStorageOnKey(STORAGE_KEY_TOKEN, "");
   navigateToIndex();
 });
+
+
 outerCardDiv.addEventListener("click", (event) => {
   if (
     event.target.parentNode.classList.contains("country") &&
     event.target.tagName != "BUTTON"
   ) {
+    const clickedCard = document.getElementsByClassName("toggleHeight")[0];
+    if (clickedCard) {
+      if (event.target.parentNode.dataset.id != clickedCard.dataset.id) {
+        const toggleDiv = clickedCard.getElementsByClassName("toggle")[0];
+        toggleDiv.classList.toggle("d-none");
+        clickedCard.classList.toggle("toggleHeight");
+      }
+    }
     const id = event.target.parentNode.dataset.id;
-
-    let toggleDiv = null;
-    const toggles = document.getElementsByClassName("toggle");
-    for (let i = 0; i < toggles.length; i++) {
-      if (toggles[i].dataset.id == id) {
-        toggleDiv = toggles[i];
-        break;
+    console.log(id);
+    if (id != "cards") {
+      console.log("not cards");
+      let toggleDiv = null;
+      const toggles = document.getElementsByClassName("toggle");
+      for (let i = 0; i < toggles.length; i++) {
+        if (toggles[i].dataset.id == id) {
+          toggleDiv = toggles[i];
+          break;
+        }
       }
-    }
-    const cards = document.getElementsByClassName("card");
-    let card = null;
-    for (let i = 0; i < cards.length; i++) {
-      if (cards[i].dataset.id == id) {
-        card = cards[i];
-        break;
+      const cards = document.getElementsByClassName("card");
+      let card = null;
+      for (let i = 0; i < cards.length; i++) {
+        if (cards[i].dataset.id == id) {
+          card = cards[i];
+          break;
+        }
       }
-    }
 
-    toggleDiv.classList.toggle("d-none");
-    card.classList.toggle("toggleHeight");
+      toggleDiv.classList.toggle("d-none");
+      card.classList.toggle("toggleHeight");
+    }
   }
 });
 
+
 function addSearchEventListeners(resp) {
-  searchBtn.addEventListener("click", () => {
-    const workArray = getClone(resp);
-    let searchedCountries = [];
-    outerCardDiv.innerHTML = null;
+  //******** (VERSION 1) WITH SEARCH BUTTON *****************/
 
-    if (searchField.value != "") {
-      const searchTerm = searchField.value.toLowerCase();
-      resp.forEach((element) => {
-        if (
-          element.name.toString().toLowerCase().includes(searchTerm) ||
-          element.capital.toString().toLowerCase() == searchTerm ||
-          element.region.toString().toLowerCase() == searchTerm ||
-          element.subregion.toString().toLowerCase() == searchTerm ||
-          element.alpha3Code.toString().toLowerCase() == searchTerm
-        ) {
-          const card = new Card(element);
-          let boolean = true;
-          searchedCountries.forEach((element) => {
-            if (element.name == card.name) {
-              boolean = false;
-              return;
-            }
-          });
-          if (boolean) {
-            card.createToggleDiv();
-            card.createInfoDiv();
-            card.createFlagDiv();
-            card.createCard();
-            searchedCountries.push(card);
-          }
-        }
-      });
-      StorageObject.setStorage(SEARCH_VALUE_STORAGE_KEY, searchTerm);
-      StorageObject.setStorage(COUNTRY_STORAGE_KEY, searchedCountries);
-      // setStorage(searchTerm, searchedCountries);
-    } else {
-      generateCards(workArray.slice(0, 20));
-      workArray.splice(0, 20);
-      const btn = generateLoadButton(1, workArray);
-      outerCardDiv.appendChild(btn);
-      StorageObject.deleteStorageOnKey(
-        COUNTRY_STORAGE_KEY,
-        SEARCH_VALUE_STORAGE_KEY
-      );
-    }
-  });
+  // searchBtn.addEventListener("click", () => {
+  //   search(resp);
+  // });
 
-  searchField.addEventListener("change", () => {
-    const workArray = getClone(resp);
-    outerCardDiv.innerHTML = null;
-    if (searchField.value == "") {
-      generateCards(workArray.slice(0, 20));
-      workArray.splice(0, 20);
-      const btn = generateLoadButton(1, workArray);
-      outerCardDiv.appendChild(btn);
-      StorageObject.deleteStorageOnKey(
-        COUNTRY_STORAGE_KEY,
-        SEARCH_VALUE_STORAGE_KEY
-      );
-    }
-  });
+  // searchField.addEventListener("change", () => {
+  //   const workArray = getClone(resp);
+  //   outerCardDiv.innerHTML = null;
+  //   if (searchField.value == "") {
+  //     generateCards(workArray.slice(0, 20));
+  //     workArray.splice(0, 20);
+  //     const btn = generateLoadButton(1, workArray);
+  //     outerCardDiv.appendChild(btn);
+  //     StorageObject.deleteStorageOnKey(
+  //       COUNTRY_STORAGE_KEY,
+  //       SEARCH_VALUE_STORAGE_KEY
+  //     );
+  //   }
+  // });
+
+  //******** (VERSION 2) WITH DEBOUNCE *****************/
+
+  searchField.addEventListener(
+    "keyup",
+    debounce(() => {
+      search(resp);
+    }, 1500)
+  );
 }
+
+
+
+
+// ********** functions **************
 
 function getStorageInfo() {
   searchValue = StorageObject.getStorage(SEARCH_VALUE_STORAGE_KEY);
@@ -282,11 +274,6 @@ function getStorageInfo() {
     return cardsArray;
   }
 }
-
-// function setStorage(item, array) {
-//   localStorage.setItem(searchValueStorageKey, JSON.stringify(item));
-//   localStorage.setItem(countryStorageKey, JSON.stringify(array));
-// }
 
 function generateCards(array) {
   array.forEach((element) => {
@@ -343,4 +330,58 @@ function getClone(arr) {
     clonedArray[i] = arr[i];
   }
   return clonedArray;
+}
+
+function debounce(callback, delay) {
+  let timeout;
+  return function () {
+    clearTimeout(timeout);
+    timeout = setTimeout(callback, delay);
+  };
+}
+
+function search(resp) {
+  const workArray = getClone(resp);
+  let searchedCountries = [];
+  outerCardDiv.innerHTML = null;
+
+  if (searchField.value != "") {
+    const searchTerm = searchField.value.toLowerCase();
+    resp.forEach((element) => {
+      if (
+        element.name.toString().toLowerCase().includes(searchTerm) ||
+        element.capital.toString().toLowerCase() == searchTerm ||
+        element.region.toString().toLowerCase() == searchTerm ||
+        element.subregion.toString().toLowerCase() == searchTerm ||
+        element.alpha3Code.toString().toLowerCase() == searchTerm
+      ) {
+        const card = new Card(element);
+        let boolean = true;
+        searchedCountries.forEach((element) => {
+          if (element.name == card.name) {
+            boolean = false;
+            return;
+          }
+        });
+        if (boolean) {
+          card.createToggleDiv();
+          card.createInfoDiv();
+          card.createFlagDiv();
+          card.createCard();
+          searchedCountries.push(card);
+        }
+      }
+    });
+    StorageObject.setStorage(SEARCH_VALUE_STORAGE_KEY, searchTerm);
+    StorageObject.setStorage(COUNTRY_STORAGE_KEY, searchedCountries);
+  } else {
+    generateCards(workArray.slice(0, 20));
+    workArray.splice(0, 20);
+    const btn = generateLoadButton(1, workArray);
+    outerCardDiv.appendChild(btn);
+    StorageObject.deleteStorageOnKey(
+      COUNTRY_STORAGE_KEY,
+      SEARCH_VALUE_STORAGE_KEY
+    );
+  }
 }
