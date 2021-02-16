@@ -150,6 +150,7 @@ Card.prototype.CardsDiv = document.getElementById("cards");
 
 
 
+
 (async () => {
   const result = await ApiObject.getAllCountries();
   const clonedArray = getClone(result);
@@ -195,9 +196,7 @@ outerCardDiv.addEventListener("click", (event) => {
       }
     }
     const id = event.target.parentNode.dataset.id;
-    console.log(id);
     if (id != "cards") {
-      console.log("not cards");
       let toggleDiv = null;
       const toggles = document.getElementsByClassName("toggle");
       for (let i = 0; i < toggles.length; i++) {
@@ -220,6 +219,25 @@ outerCardDiv.addEventListener("click", (event) => {
     }
   }
 });
+
+
+document.addEventListener("click", (event) => {
+  if (
+    event.target.tagName == "BODY" ||
+    event.target.classList.contains("container") ||
+    event.target.classList.contains("cards")
+  ) {
+    const toggledCard = document.getElementsByClassName("toggleHeight")[0];
+    if (toggledCard) {
+      const cardAdditionalInfo = toggledCard.getElementsByClassName(
+        "toggle"
+      )[0];
+      cardAdditionalInfo.classList.add("d-none");
+      toggledCard.classList.remove("toggleHeight");
+    }
+  } 
+});
+
 
 
 function addSearchEventListeners(resp) {
@@ -257,6 +275,8 @@ function addSearchEventListeners(resp) {
 
 
 
+
+
 // ********** functions **************
 
 function getStorageInfo() {
@@ -275,12 +295,16 @@ function getStorageInfo() {
   }
 }
 
+
+
 function generateCards(array) {
   array.forEach((element) => {
     const card = new Card(element);
     card.createToggleDiv().createInfoDiv().createFlagDiv().createCard();
   });
 }
+
+
 
 function generateLoadButton(pageNumber, array) {
   const loadBtn = document.createElement("button");
@@ -324,6 +348,7 @@ function generateLoadButton(pageNumber, array) {
   return loadBtn;
 }
 
+
 function getClone(arr) {
   let clonedArray = [];
   for (let i = 0; i < arr.length; i++) {
@@ -332,6 +357,7 @@ function getClone(arr) {
   return clonedArray;
 }
 
+
 function debounce(callback, delay) {
   let timeout;
   return function () {
@@ -339,6 +365,8 @@ function debounce(callback, delay) {
     timeout = setTimeout(callback, delay);
   };
 }
+
+
 
 function search(resp) {
   const workArray = getClone(resp);
